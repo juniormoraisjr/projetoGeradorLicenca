@@ -18,6 +18,7 @@ public class GeradorLicencaController {
 
 	@RequestMapping(value = "/gerarToken", method = RequestMethod.POST)
 	public String gerarToken(@RequestBody GeradorLicenca entity) {
-		return service.gerarTokenLicenca(entity);
+		GeradorLicenca result = service.gerarTokenLicenca(entity);
+		return result.getToken();
 	}
 }

@@ -18,7 +18,7 @@ public class GeradorLicencaService {
 	@Autowired
 	private GeradorLicencaRepository repository;
 
-	public String gerarTokenLicenca(GeradorLicenca entity) {
+	public GeradorLicenca gerarTokenLicenca(GeradorLicenca entity) {
 		String nomeEmpresa = createInfoEmpresa(entity);
 		String codigoEmpresa = createEmpresaEmpresa(entity);
 		String cnpjEmpresa = createCnpjEmpresa(entity);
@@ -34,10 +34,9 @@ public class GeradorLicencaService {
 				dataGeracao, dataInicialLicenca, dataFinalLicenca, contraSenhaGeracaoLicenca);
 
 		entity.setToken(token);
-		
 		repository.save(entity);
 
-		return token;
+		return entity;
 	}
 
 	private String createDataFinal(GeradorLicenca entity, Calendar dataCorrente) {
