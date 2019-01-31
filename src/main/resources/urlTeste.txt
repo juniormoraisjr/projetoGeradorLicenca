@@ -1,0 +1,14 @@
+http://localhost:8080/usuario/listarUsuario
+http://localhost:8080/usuario/gravarUsuario
+http://localhost:8080/usuario/alterarUsuario
+http://localhost:8080/usuario/excluirUsuario/5bfe6bcfb9737128ece6a926
+http://localhost:8080/usuario/listarPaginadoUsuario/0/1
+http://localhost:8080/oauth/token?grant_type=password&username=junior&password=123
+
+
+Bearer b24d0c1d-3276-47cd-9d39-f5b7ab096667
+
+{
+	"nome": "priscila",
+	"email": "priscila@teste.com.br"
+}
