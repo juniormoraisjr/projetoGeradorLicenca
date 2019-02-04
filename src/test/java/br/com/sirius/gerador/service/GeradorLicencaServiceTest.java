@@ -14,9 +14,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import br.com.sirius.gerador.config.MongoConfiguration;
+import br.com.sirius.gerador.infra.util.cypher.PasswordUtils;
 import br.com.sirius.gerador.infra.util.exception.BusinessException;
 import br.com.sirius.gerador.repository.entity.GeradorLicenca;
-import br.com.sirius.gerador.service.GeradorLicencaService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = MongoConfiguration.class)
@@ -68,7 +68,45 @@ public class GeradorLicencaServiceTest {
 
 	@Test
 	public void testCreateDigitoCnpj() {
-		fail("Not yet implemented");
+		try {
+			/* Execução */
+			String result = service.createDigitoCnpj(entity.getCnpjEmpresa());
+
+			/* Verificação */
+			assertThat(result, is("48"));
+		} catch (Exception e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testCreateDigitoCnpj_Vazio() {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa("");
+
+		try {
+			/* Execução */
+			service.createCnpjEmpresa(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+		}
+	}
+
+	@Test
+	public void testCreateDigitoCnpj_Nulo() {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa(null);
+
+		try {
+			/* Execução */
+			service.createCnpjEmpresa(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+		}
 	}
 
 	@Test
@@ -244,7 +282,108 @@ public class GeradorLicencaServiceTest {
 	}
 
 	@Test
-	public void testCreateContraSenha() {
-		fail("Not yet implemented");
+	public void testCreateContraSenha() throws BusinessException {
+		/* Montagem do Cenário */
+		String resultTrue = "Contra Senha&" + PasswordUtils.encrip(((1l + 1l + 48) * 10));
+
+		try {
+			/* Execução */
+			String result = service.createContraSenha(entity);
+
+			/* Verificação */
+			assertThat(result, is(resultTrue));
+		} catch (Exception e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_CnpjNulo() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa(null);
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_CnpjVazio() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa("");
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_IdEmpresaNulo() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setIdEmpresa(null);
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_IdEmpresaVazio() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setIdEmpresa("");
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_IdOrganizacaoNulo() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setIdOrganizacao(null);
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+		}
+	}
+
+	@Test
+	public void testCreateContraSenha_IdOrganizacaoVazio() throws BusinessException {
+		/* Montagem do Cenário */
+		entity.setIdOrganizacao("");
+
+		try {
+			/* Execução */
+			service.createContraSenha(entity);
+			fail();
+		} catch (Exception e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+		}
 	}
 }

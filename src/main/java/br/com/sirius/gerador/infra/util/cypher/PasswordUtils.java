@@ -7,7 +7,8 @@ import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
 
 /**
- * Classe utilitária responsável por realizar a criptografia e descriptografia de um valor
+ * Classe utilitária responsável por realizar a criptografia e descriptografia
+ * de um valor
  * 
  * @author José Ribeiro de Morais Junior (junior.morais@yahoo.com.br)
  * 
@@ -15,7 +16,6 @@ import sun.misc.BASE64Encoder;
  * 
  * @version 1.0
  */
-@SuppressWarnings("restriction")
 public final class PasswordUtils {
 
 	/** Logger **/
@@ -49,6 +49,18 @@ public final class PasswordUtils {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Encriptografa uma determinada senha
+	 * 
+	 * @param value
+	 *            - valor que será encriptografado
+	 * 
+	 * @return Valor encriptografado
+	 */
+	public static String encrip(Long value) {
+		return encrip(value.toString());
 	}
 
 	/**
