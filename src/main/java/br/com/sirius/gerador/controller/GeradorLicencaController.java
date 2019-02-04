@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.sirius.gerador.infra.util.exception.BusinessException;
 import br.com.sirius.gerador.repository.entity.GeradorLicenca;
 import br.com.sirius.gerador.service.GeradorLicencaService;
 
@@ -18,7 +19,11 @@ public class GeradorLicencaController {
 
 	@RequestMapping(value = "/gerarToken", method = RequestMethod.POST)
 	public String gerarToken(@RequestBody GeradorLicenca entity) {
-		GeradorLicenca result = service.gerarTokenLicenca(entity);
-		return result.getToken();
+		try {
+			GeradorLicenca result = service.gerarTokenLicenca(entity);
+			return result.getToken();
+		} catch (BusinessException e) {
+			return e.getMessage();
+		}
 	}
 }
