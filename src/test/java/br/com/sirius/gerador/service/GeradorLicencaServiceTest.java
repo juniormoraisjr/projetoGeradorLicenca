@@ -1,6 +1,7 @@
 package br.com.sirius.gerador.service;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -14,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import br.com.sirius.gerador.config.MongoConfiguration;
-import br.com.sirius.gerador.infra.util.cypher.PasswordUtils;
 import br.com.sirius.gerador.infra.util.exception.BusinessException;
 import br.com.sirius.gerador.repository.entity.GeradorLicenca;
 
@@ -35,6 +35,7 @@ public class GeradorLicencaServiceTest {
 		entity = new GeradorLicenca();
 		entity.setEmpresa("Sirius Software");
 		entity.setCnpjEmpresa("30.127.206/0001-48");
+
 		entity.setIdEmpresa("1");
 		entity.setIdOrganizacao("1");
 		entity.setQtdeDiaLicenca(60);
@@ -47,73 +48,84 @@ public class GeradorLicencaServiceTest {
 	}
 
 	@Test
-	public void testGerarTokenLicenca() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateDataFinal() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateDataInicial() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateDataGeracao() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreateDigitoCnpj() {
+	public void testCriarDigitoCnpj() {
 		try {
 			/* Execução */
-			String result = service.createDigitoCnpj(entity.getCnpjEmpresa());
+			String result = service.criarDigitoCnpj(entity);
 
 			/* Verificação */
 			assertThat(result, is("48"));
-		} catch (Exception e) {
+		} catch (BusinessException e) {
 			fail();
 		}
 	}
 
 	@Test
-	public void testCreateDigitoCnpj_Vazio() {
+	public void testCriarDigitoCnpj_Invalido() {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa("75.119.313/0001-62");
+
+		try {
+			/* Execução */
+			String result = service.criarDigitoCnpj(entity);
+
+			/* Verificação */
+			assertThat(result, not("48"));
+		} catch (BusinessException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testCriarDigitoCnpj_Vazio() {
 		/* Montagem do Cenário */
 		entity.setCnpjEmpresa("");
 
 		try {
 			/* Execução */
-			service.createCnpjEmpresa(entity);
+			service.criarDigitoCnpj(entity);
 			fail();
-		} catch (Exception e) {
+		} catch (BusinessException e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateDigitoCnpj_Nulo() {
+	public void testCriarDigitoCnpj_Nulo() {
 		/* Montagem do Cenário */
 		entity.setCnpjEmpresa(null);
 
 		try {
 			/* Execução */
-			service.createCnpjEmpresa(entity);
+			service.criarDigitoCnpj(entity);
 			fail();
-		} catch (Exception e) {
+		} catch (BusinessException e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateOrganizacaoEmpresarial() {
+	public void testCriarDigitoCnpj_FormatoInvalido() {
+		/* Montagem do Cenário */
+		entity.setCnpjEmpresa("30.127.206/0001-");
+
 		try {
 			/* Execução */
-			String result = service.createOrganizacaoEmpresarial(entity);
+			service.criarDigitoCnpj(entity);
+			fail();
+		} catch (BusinessException e) {
+			/* Verificação */
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_INVALIDO));
+		}
+	}
+
+	@Test
+	public void testCriarIdOrganizacaoEmpresarial() {
+		try {
+			/* Execução */
+			String result = service.criarIdOrganizacaoEmpresarial(entity, true);
 
 			/* Verificação */
 			assertThat(result, is("Código Organizacao Empresarial Cliente&1"));
@@ -123,83 +135,40 @@ public class GeradorLicencaServiceTest {
 	}
 
 	@Test
-	public void testCreateOrganizacaoEmpresarial_Vazio() {
+	public void testCriarIdOrganizacaoEmpresarial_Vazio() {
 		/* Montagem do Cenário */
 		entity.setIdOrganizacao("");
 
 		try {
 			/* Execução */
-			service.createOrganizacaoEmpresarial(entity);
+			service.criarIdOrganizacaoEmpresarial(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateOrganizacaoEmpresarial_Nulo() {
+	public void testCriarIdOrganizacaoEmpresarial_Nulo() {
 		/* Montagem do Cenário */
 		entity.setIdOrganizacao(null);
 
 		try {
 			/* Execução */
-			service.createOrganizacaoEmpresarial(entity);
+			service.criarIdOrganizacaoEmpresarial(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateCnpjEmpresa() {
+	public void testCriarIdEmpresa() {
 		try {
 			/* Execução */
-			String result = service.createCnpjEmpresa(entity);
-
-			/* Verificação */
-			assertThat(result, is("Cnpj Empresa&30.127.206/0001-48"));
-		} catch (Exception e) {
-			fail();
-		}
-	}
-
-	@Test
-	public void testCreateCnpjEmpresa_Vazio() {
-		/* Montagem do Cenário */
-		entity.setCnpjEmpresa("");
-
-		try {
-			/* Execução */
-			service.createCnpjEmpresa(entity);
-			fail();
-		} catch (Exception e) {
-			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
-		}
-	}
-
-	@Test
-	public void testCreateCnpjEmpresa_Nulo() {
-		/* Montagem do Cenário */
-		entity.setCnpjEmpresa(null);
-
-		try {
-			/* Execução */
-			service.createCnpjEmpresa(entity);
-			fail();
-		} catch (Exception e) {
-			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
-		}
-	}
-
-	@Test
-	public void createCodigoEmpresa() {
-		try {
-			/* Execução */
-			String result = service.createCodigoEmpresa(entity);
+			String result = service.criarIdEmpresa(entity, true);
 
 			/* Verificação */
 			assertThat(result, is("Código Empresa&1"));
@@ -209,40 +178,40 @@ public class GeradorLicencaServiceTest {
 	}
 
 	@Test
-	public void createCodigoEmpresa_Vazio() {
+	public void testCriarIdEmpresa_Vazio() {
 		/* Montagem do Cenário */
 		entity.setIdEmpresa("");
 
 		try {
 			/* Execução */
-			service.createCodigoEmpresa(entity);
+			service.criarIdEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void createCodigoEmpresa_Nulo() {
+	public void testCriarIdEmpresa_Nulo() {
 		/* Montagem do Cenário */
 		entity.setIdEmpresa(null);
 
 		try {
 			/* Execução */
-			service.createCodigoEmpresa(entity);
+			service.criarIdEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void createEmpresa() {
+	public void testCriarEmpresa() {
 		try {
 			/* Execução */
-			String result = service.createEmpresa(entity);
+			String result = service.criarEmpresa(entity, true);
 
 			/* Verificação */
 			assertThat(result, is("Empresa&Sirius Software"));
@@ -252,138 +221,239 @@ public class GeradorLicencaServiceTest {
 	}
 
 	@Test
-	public void createEmpresa_Vazia() {
+	public void testCriarEmpresa_Vazia() {
 		/* Montagem do Cenário */
 		entity.setEmpresa("");
 
 		try {
 			/* Execução */
-			service.createEmpresa(entity);
+			service.criarEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_NOME_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_NOME_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void createEmpresa_Nula() {
+	public void testCriarEmpresa_Nula() {
 		/* Montagem do Cenário */
 		entity.setEmpresa(null);
 
 		try {
 			/* Execução */
-			service.createEmpresa(entity);
+			service.criarEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_NOME_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_NOME_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateContraSenha() throws BusinessException {
-		/* Montagem do Cenário */
-		String resultTrue = "Contra Senha&" + PasswordUtils.encrip(((1l + 1l + 48) * 10));
-
+	public void testCriarCnpjEmpresa() {
 		try {
 			/* Execução */
-			String result = service.createContraSenha(entity);
+			String result = service.criarCnpjEmpresa(entity, true);
 
 			/* Verificação */
-			assertThat(result, is(resultTrue));
+			assertThat(result, is("Cnpj Empresa&30.127.206/0001-48"));
 		} catch (Exception e) {
 			fail();
 		}
 	}
 
 	@Test
-	public void testCreateContraSenha_CnpjNulo() throws BusinessException {
-		/* Montagem do Cenário */
-		entity.setCnpjEmpresa(null);
-
-		try {
-			/* Execução */
-			service.createContraSenha(entity);
-			fail();
-		} catch (Exception e) {
-			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
-		}
-	}
-
-	@Test
-	public void testCreateContraSenha_CnpjVazio() throws BusinessException {
+	public void testCriarCnpjEmpresa_Vazio() {
 		/* Montagem do Cenário */
 		entity.setCnpjEmpresa("");
 
 		try {
 			/* Execução */
-			service.createContraSenha(entity);
+			service.criarCnpjEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateContraSenha_IdEmpresaNulo() throws BusinessException {
+	public void testCriarCnpjEmpresa_Nulo() {
 		/* Montagem do Cenário */
-		entity.setIdEmpresa(null);
+		entity.setCnpjEmpresa(null);
 
 		try {
 			/* Execução */
-			service.createContraSenha(entity);
+			service.criarCnpjEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_NULO_VAZIO));
 		}
 	}
 
 	@Test
-	public void testCreateContraSenha_IdEmpresaVazio() throws BusinessException {
+	public void testCriarCnpjEmpresa_FormatoInvalido() {
 		/* Montagem do Cenário */
-		entity.setIdEmpresa("");
+		entity.setCnpjEmpresa("30.127.206/0001-");
 
 		try {
 			/* Execução */
-			service.createContraSenha(entity);
+			service.criarCnpjEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_INVALIDO));
 		}
 	}
 
 	@Test
-	public void testCreateContraSenha_IdOrganizacaoNulo() throws BusinessException {
+	public void testCriarCnpjEmpresa_NumeroInvalido() {
 		/* Montagem do Cenário */
-		entity.setIdOrganizacao(null);
+		entity.setCnpjEmpresa("12.127.206/0001-11");
 
 		try {
 			/* Execução */
-			service.createContraSenha(entity);
+			service.criarCnpjEmpresa(entity, true);
 			fail();
 		} catch (Exception e) {
 			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+			assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA_INVALIDO));
 		}
 	}
 
-	@Test
-	public void testCreateContraSenha_IdOrganizacaoVazio() throws BusinessException {
-		/* Montagem do Cenário */
-		entity.setIdOrganizacao("");
-
-		try {
-			/* Execução */
-			service.createContraSenha(entity);
-			fail();
-		} catch (Exception e) {
-			/* Verificação */
-			assertThat(e.getMessage(), is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
-		}
-	}
+	//
+	// @Test
+	// public void testCriarContraSenha() throws BusinessException {
+	// /* Montagem do Cenário */
+	// String resultTrue = "Contra Senha&" + PasswordUtils.encrip(((1l + 1l +
+	// 48) * 10));
+	//
+	// try {
+	// /* Execução */
+	// String result = service.createContraSenha(entity);
+	//
+	// /* Verificação */
+	// assertThat(result, is(resultTrue));
+	// } catch (Exception e) {
+	// fail();
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_CnpjNulo() throws BusinessException {
+	// /* Montagem do Cenário */
+	// entity.setCnpjEmpresa(null);
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_CnpjVazio() throws BusinessException {
+	// /* Montagem do Cenário */
+	// entity.setCnpjEmpresa("");
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(), is(BusinessException.MSG_CNPJ_EMPRESA));
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_IdEmpresaNulo() throws BusinessException
+	// {
+	// /* Montagem do Cenário */
+	// entity.setIdEmpresa(null);
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_IdEmpresaVazio() throws
+	// BusinessException {
+	// /* Montagem do Cenário */
+	// entity.setIdEmpresa("");
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(), is(BusinessException.MSG_ID_EMPRESA));
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_IdOrganizacaoNulo() throws
+	// BusinessException {
+	// /* Montagem do Cenário */
+	// entity.setIdOrganizacao(null);
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(),
+	// is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+	// }
+	// }
+	//
+	// @Test
+	// public void testCriarContraSenha_IdOrganizacaoVazio() throws
+	// BusinessException {
+	// /* Montagem do Cenário */
+	// entity.setIdOrganizacao("");
+	//
+	// try {
+	// /* Execução */
+	// service.createContraSenha(entity);
+	// fail();
+	// } catch (Exception e) {
+	// /* Verificação */
+	// assertThat(e.getMessage(),
+	// is(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL));
+	// }
+	// }
+	//
+	// @Test
+	// public void testGerarTokenLicenca() {
+	// fail("Not yet implemented");
+	// }
+	//
+	// @Test
+	// public void testCriarDataFinal() {
+	// fail("Not yet implemented");
+	// }
+	//
+	// @Test
+	// public void testCriarDataInicial() {
+	// fail("Not yet implemented");
+	// }
+	//
+	// @Test
+	// public void testCriarDataGeracao() {
+	// fail("Not yet implemented");
+	// }
 }

@@ -5,6 +5,8 @@ import java.util.Calendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.caelum.stella.validation.CNPJValidator;
+import br.com.caelum.stella.validation.InvalidStateException;
 import br.com.sirius.gerador.infra.util.cypher.PasswordUtils;
 import br.com.sirius.gerador.infra.util.date.CalendarUtils;
 import br.com.sirius.gerador.infra.util.date.CalendarUtilsFormatter;
@@ -20,17 +22,17 @@ public class GeradorLicencaService {
 	private GeradorLicencaRepository repository;
 
 	public GeradorLicenca gerarTokenLicenca(GeradorLicenca entity) throws BusinessException {
-		String nomeEmpresa = createEmpresa(entity);
-		String codigoEmpresa = createCodigoEmpresa(entity);
-		String cnpjEmpresa = createCnpjEmpresa(entity);
-		String codigoOrganizacaoEmpresarial = createOrganizacaoEmpresarial(entity);
+		String nomeEmpresa = criarEmpresa(entity, true);
+		String codigoEmpresa = criarIdEmpresa(entity, true);
+		String codigoOrganizacaoEmpresarial = criarIdOrganizacaoEmpresarial(entity, true);
+		String cnpjEmpresa = criarCnpjEmpresa(entity, true);
 
-		String dataGeracao = createDataGeracao();
+		String dataGeracao = criarDataGeracaoLicenca();
 		Calendar dataCorrente = CalendarUtils.setZeroAllHourInCalendar(Calendar.getInstance());
-		String dataInicialLicenca = createDataInicial(dataCorrente);
-		String dataFinalLicenca = createDataFinal(entity, dataCorrente);
+		String dataInicialLicenca = criarDataInicialLicenca(dataCorrente);
+		String dataFinalLicenca = criarDataFinalLicenca(entity, dataCorrente);
 
-		String contraSenhaGeracaoLicenca = createContraSenha(entity);
+		String contraSenhaGeracaoLicenca = criarContraSenhaLicenca(entity, true);
 		String token = createTokenLicenca(nomeEmpresa, codigoEmpresa, cnpjEmpresa, codigoOrganizacaoEmpresarial,
 				dataGeracao, dataInicialLicenca, dataFinalLicenca, contraSenhaGeracaoLicenca);
 
@@ -40,80 +42,73 @@ public class GeradorLicencaService {
 		return entity;
 	}
 
-	public String createDataFinal(GeradorLicenca entity, Calendar dataCorrente) {
+	public String criarDataFinalLicenca(GeradorLicenca entity, Calendar dataCorrente) {
 		CalendarUtils.setLastHourInCalendar(dataCorrente);
 		dataCorrente.add(Calendar.DATE, entity.getQtdeDiaLicenca());
 		return "Data Final Licença&" + CalendarUtilsFormatter.format(dataCorrente, "dd/MM/yyyy HH:mm:ss");
 	}
 
-	public String createDataInicial(Calendar dataCorrente) {
+	public String criarDataInicialLicenca(Calendar dataCorrente) {
 		return "Data Inicial Licença&" + CalendarUtilsFormatter.format(dataCorrente, "dd/MM/yyyy HH:mm:ss");
 	}
 
-	public String createDataGeracao() {
+	public String criarDataGeracaoLicenca() {
 		return "Data Geração&" + CalendarUtilsFormatter.format(Calendar.getInstance(), "dd/MM/yyyy HH:mm:ss");
 	}
 
-	public String createDigitoCnpj(String cnpjEmpresa) throws BusinessException {
-		if (cnpjEmpresa != null && !cnpjEmpresa.equals("")) {
-			return cnpjEmpresa.split("-")[1];
-		} else {
-			throw new BusinessException(BusinessException.MSG_CNPJ_EMPRESA);
-		}
+	public String criarDigitoCnpj(GeradorLicenca entity) throws BusinessException {
+		return criarCnpjEmpresa(entity, false).split("-")[1];
 	}
 
-	public String createOrganizacaoEmpresarial(GeradorLicenca entity) throws BusinessException {
+	public String criarIdOrganizacaoEmpresarial(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
 		if (entity.getIdOrganizacao() != null && !entity.getIdOrganizacao().equals("")) {
-			return "Código Organizacao Empresarial Cliente&" + entity.getIdOrganizacao();
+			return returnConcat ? "Código Organizacao Empresarial Cliente&" + entity.getIdOrganizacao()
+					: entity.getIdOrganizacao();
 		} else {
-			throw new BusinessException(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL);
+			throw new BusinessException(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL_NULO_VAZIO);
 		}
 	}
 
-	public String createCnpjEmpresa(GeradorLicenca entity) throws BusinessException {
-		if (entity.getCnpjEmpresa() != null && !entity.getCnpjEmpresa().equals("")) {
-			return "Cnpj Empresa&" + entity.getCnpjEmpresa();
-		} else {
-			throw new BusinessException(BusinessException.MSG_CNPJ_EMPRESA);
-		}
-	}
-
-	public String createCodigoEmpresa(GeradorLicenca entity) throws BusinessException {
+	public String criarIdEmpresa(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
 		if (entity.getIdEmpresa() != null && !entity.getIdEmpresa().equals("")) {
-			return "Código Empresa&" + entity.getIdEmpresa();
+			return returnConcat ? "Código Empresa&" + entity.getIdEmpresa() : entity.getIdEmpresa();
 		} else {
-			throw new BusinessException(BusinessException.MSG_ID_EMPRESA);
+			throw new BusinessException(BusinessException.MSG_ID_EMPRESA_NULO_VAZIO);
 		}
 	}
 
-	public String createEmpresa(GeradorLicenca entity) throws BusinessException {
+	public String criarEmpresa(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
 		if (entity.getEmpresa() != null && !entity.getEmpresa().equals("")) {
-			return "Empresa&" + entity.getEmpresa();
+			return returnConcat ? "Empresa&" + entity.getEmpresa() : entity.getEmpresa();
 		} else {
-			throw new BusinessException(BusinessException.MSG_NOME_EMPRESA);
+			throw new BusinessException(BusinessException.MSG_NOME_EMPRESA_NULO_VAZIO);
 		}
 	}
 
-	public String createContraSenha(GeradorLicenca entity) throws BusinessException {
-		if (entity.getIdEmpresa() != null && !entity.getIdEmpresa().equals("")) {
-			if (entity.getIdOrganizacao() != null && !entity.getIdOrganizacao().equals("")) {
-				if (entity.getCnpjEmpresa() != null && !entity.getCnpjEmpresa().equals("")) {
-					Long result = (NumberUtils.toLong(entity.getIdEmpresa())
-							+ NumberUtils.toLong(entity.getIdOrganizacao())
-							+ NumberUtils.toLong(createDigitoCnpj(entity.getCnpjEmpresa()))) * 10;
-					return "Contra Senha&" + PasswordUtils.encrip(result.toString());
-				} else {
-					throw new BusinessException(BusinessException.MSG_CNPJ_EMPRESA);
-				}
-			} else {
-				throw new BusinessException(BusinessException.MSG_ID_ORGANIZACAO_EMPRESARIAL);
+	public String criarCnpjEmpresa(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
+		if (entity.getCnpjEmpresa() != null && !entity.getCnpjEmpresa().equals("")) {
+			CNPJValidator cnpjValidator = new CNPJValidator(true);
+
+			try {
+				cnpjValidator.assertValid(entity.getCnpjEmpresa());
+				return returnConcat ? "Cnpj Empresa&" + entity.getCnpjEmpresa() : entity.getCnpjEmpresa();
+			} catch (InvalidStateException vm) {
+				throw new BusinessException(BusinessException.MSG_CNPJ_EMPRESA_INVALIDO);
 			}
 		} else {
-			throw new BusinessException(BusinessException.MSG_ID_EMPRESA);
+			throw new BusinessException(BusinessException.MSG_CNPJ_EMPRESA_NULO_VAZIO);
 		}
 	}
 
-	public String createTokenLicenca(String nomeEmpresa, String codigoEmpresa, String cnpjEmpresa,
+	public String criarContraSenhaLicenca(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
+		Long result = (NumberUtils.toLong(criarIdEmpresa(entity, false))
+				+ NumberUtils.toLong(criarIdOrganizacaoEmpresarial(entity, false))
+				+ NumberUtils.toLong(criarDigitoCnpj(entity))) * 10;
+		return returnConcat ? "Contra Senha&" + PasswordUtils.encrip(result.toString())
+				: PasswordUtils.encrip(result.toString());
+	}
+
+	private String createTokenLicenca(String nomeEmpresa, String codigoEmpresa, String cnpjEmpresa,
 			String codigoOrganizacaoEmpresarial, String dataGeracao, String dataInicialLicenca, String dataFinalLicenca,
 			String contraSenhaGeracaoLicenca) {
 		String token = PasswordUtils.encrip(nomeEmpresa + ";" + dataGeracao + ";" + dataInicialLicenca + ";"
