@@ -32,7 +32,7 @@ public class GeradorLicencaService {
 		String dataInicialLicenca = criarDataInicialLicenca(dataCorrente);
 		String dataFinalLicenca = criarDataFinalLicenca(entity, dataCorrente);
 
-		String contraSenhaGeracaoLicenca = criarContraSenhaLicenca(entity, true);
+		String contraSenhaGeracaoLicenca = criarContraSenha(entity, true);
 		String token = createTokenLicenca(nomeEmpresa, codigoEmpresa, cnpjEmpresa, codigoOrganizacaoEmpresarial,
 				dataGeracao, dataInicialLicenca, dataFinalLicenca, contraSenhaGeracaoLicenca);
 
@@ -100,7 +100,7 @@ public class GeradorLicencaService {
 		}
 	}
 
-	public String criarContraSenhaLicenca(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
+	public String criarContraSenha(GeradorLicenca entity, boolean returnConcat) throws BusinessException {
 		Long result = (NumberUtils.toLong(criarIdEmpresa(entity, false))
 				+ NumberUtils.toLong(criarIdOrganizacaoEmpresarial(entity, false))
 				+ NumberUtils.toLong(criarDigitoCnpj(entity))) * 10;
