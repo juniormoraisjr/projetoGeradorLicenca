@@ -4,7 +4,7 @@ Este é um projeto de estudo que foi utilizado o Spring Boot + Spring Security +
 
 O intuito foi implementar alguns endpoint responsável por gerar uma chave de licença para um software, onde este endpoint poderá ser acessado apenas após a autenticação do usuário através do oAuth2.
 
-- Endpoint de Autenticação
+- Endpoint Autenticação OAuth2
     - Url : http://localhost:8080/oauth/token?grant_type=password&username=junior&password=123
     - Method : POST
     - Authorization : 
@@ -12,7 +12,7 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
         username : apigeradorlicenca
         password : apigeradorlicenca918273
         
-- Endpoint de Geração de Licença
+- Endpoint Geração De Licença Software
     - Url : http://localhost:8080/geradorLicenca/gerarToken
     - Method : POST
     - Headers : 
