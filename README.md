@@ -22,7 +22,7 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
     ```
         { 
             "urlSistema": "http://localhost/teste",
-            "empresa": "Exemplo Smpresa",
+            "empresa": "Exemplo Empresa",
             "idEmpresa": "2002",
             "cnpjEmpresa": "46.900.152/0001-41",
             "idOrganizacao": "2001",
