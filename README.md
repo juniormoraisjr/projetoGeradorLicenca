@@ -70,7 +70,7 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
  
 - Endpoint Alterar Usuário
     - Url : http://localhost:8080/usuario/alterar
-    - Method : DELETE
+    - Method : PUT
     - Headers : 
         - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
         - Content-Type : application/json
