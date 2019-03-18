@@ -1,4 +1,4 @@
-# Projeto Estudo Spring OAuth2
+# Projeto Estudo Spring Boot - OAuth2
 
 Este é um projeto de estudo que foi utilizado o Spring Boot + Spring Security + Spring OAuth2.
 
@@ -8,10 +8,12 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
     - Url : http://localhost:8080/oauth/token?grant_type=password&username=junior&password=123
     - Method : POST
     - Authorization : 
-        type : Basic Auth
-        username : apigeradorlicenca
-        password : apigeradorlicenca918273
-        
+    ```
+    type : Basic Auth
+    username : apigeradorlicenca
+    password : apigeradorlicenca918273
+    ``` 
+    
 - Endpoint Geração De Licença Software
     - Url : http://localhost:8080/geradorLicenca/gerarToken
     - Method : POST
@@ -29,3 +31,25 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
             "qtdeDiaLicenca": 60 
         }
     ```
+
+- Endpoint Listar Perfil
+    - Url : http://localhost:8080/perfil/listar
+    - Method : POST
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
+
+- Endpoint Listar Usuário
+    - Url : http://localhost:8080/usuario/listar
+    - Method : POST
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
+
+- Endpoint Listar Usuário Paginado
+    - Url : http://localhost:8080/usuario/listarPaginado/0/1
+    - Method : POST
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
+        
