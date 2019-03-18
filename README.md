@@ -48,8 +48,52 @@ O intuito foi implementar alguns endpoint responsável por gerar uma chave de li
 
 - Endpoint Listar Usuário Paginado
     - Url : http://localhost:8080/usuario/listarPaginado/0/1
+    - Method : GET
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
+ 
+- Endpoint Gravar Usuário
+    - Url : http://localhost:8080/usuario/gravar
     - Method : POST
     - Headers : 
         - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
         - Content-Type : application/json
-        
+    - Body : raw
+    ```
+        {
+            "nome" : "tet",
+            "email" : "teste",
+            "senha" : "123"
+        }
+    ```
+ 
+- Endpoint Alterar Usuário
+    - Url : http://localhost:8080/usuario/alterar
+    - Method : DELETE
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
+    - Body : raw
+    ```
+        {
+            "id": "5c8fdd486a1d482818f1a4f4",
+            "nome" : "priscila",
+            "email" : "priscila",
+            "senha" : "123",
+            "perfis": [
+                {
+                    "id": "5c01319b1a76720d5c43f848",
+                    "nome": "ROLE_ADMIN",
+                    "authority": "ROLE_ADMIN"
+                }
+            ]
+        }
+    ```
+    
+- Endpoint Excluir Usuário
+    - Url : http://localhost:8080/usuario/excluir/ID_CLIENTE
+    - Method : DELETE
+    - Headers : 
+        - Authorization : Bearer INFORMAR O TOKEN GERADO PELA CHAMADA AO ENDPOINT ANTERIOR
+        - Content-Type : application/json
